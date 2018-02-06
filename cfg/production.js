@@ -47,34 +47,34 @@ module.exports = [{
 		new webpack.optimize.AggressiveMergingPlugin()
 	]
 },
-	{
-		name:'server',
-		devtool: 'nosources-source-map',
-		entry: './server.js',
-		output: {
-			path: path.resolve('build'),
-			filename: 'server.js',
-			publicPath: 'build'
-		},
-		target:'node',
-		externals:[nodeExternals()],
-		module: {
-			rules: [
+{
+	name:'server',
+	devtool: 'nosources-source-map',
+	entry: './server.js',
+	output: {
+		path: path.resolve('build'),
+		filename: 'server.js',
+		publicPath: 'build'
+	},
+	target:'node',
+	externals:[nodeExternals()],
+	module: {
+		rules: [
 
-				{
-					test: /\.js$/,
-					loader: 'babel-loader',
-					include: srcPath
-				},
-				{
-					test: /\.json$/,
-					loader: 'json-loader'
-				}
-			]
-		},
-		plugins: [
-			new webpack.EnvironmentPlugin(['NODE_ENV']),
-			new webpack.optimize.AggressiveMergingPlugin()
-
+			{
+				test: /\.js$/,
+				loader: 'babel-loader',
+				include: srcPath
+			},
+			{
+				test: /\.json$/,
+				loader: 'json-loader'
+			}
 		]
-	}]
+	},
+	plugins: [
+		new webpack.EnvironmentPlugin(['NODE_ENV']),
+		new webpack.optimize.AggressiveMergingPlugin()
+
+	]
+}]

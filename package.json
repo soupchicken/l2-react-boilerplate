@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/npm/npm.git"
+    "url": "https://github.com/soupchicken/l2-react-boilerplate"
   },
   "keywords": [
     "react",
