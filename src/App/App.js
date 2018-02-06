@@ -27,11 +27,11 @@ const App = React.createClass({
     const { isMobile } = this.state;
     if ( isMobile ){
       return (
-        <div id="MobileApp"></div>
+        <div id="MobileApp">THIS IS A MOBILE APP</div>
       );
     } else {
       return (
-        <div id="App"></div>
+        <div id="App">THIS IS A WEBAPP</div>
       );
     }
   }

@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf build",
     "build": "npm run clean && export NODE_ENV=production && mkdir build && webpack",
-    "local": "webpack && export NODE_ENV=local && babel-node server.js",
+    "local": "export NODE_ENV=local && webpack && babel-node server.js",
     "production": "npm run build && node build/server.js",
     "build-win": "npm run clean && set NODE_ENV=production&& mkdir build && webpack",
     "local-win": "set NODE_ENV=local&& webpack && babel-node server.js",
