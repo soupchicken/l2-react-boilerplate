@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, Route } from 'react-router-dom'
 import { AppContainer } from 'react-hot-loader'
 import configureStore from './config/store';
 import App from './App/ConnectedApp'
@@ -17,7 +17,9 @@ render(
 		{ NODE_ENV === 'production' ?
 			// don't include AppContainer component in production
 			// used for hot-reloads in webpack
-			<App /> : <AppContainer><App/></AppContainer>}
+			<Route path="/" component={ App }/> :
+			<AppContainer><Route path="/" component={ App }/></AppContainer>
+		}
     </BrowserRouter>
   </Provider>,
   document.getElementById('App')
