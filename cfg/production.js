@@ -76,5 +76,5 @@ module.exports = [
 			new webpack.EnvironmentPlugin(['NODE_ENV']),
 			new webpack.optimize.AggressiveMergingPlugin()
 		]
-}
+	}
 ]

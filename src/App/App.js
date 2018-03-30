@@ -48,7 +48,9 @@ const App = React.createClass({
 
     if ( isMobile ){
       return (
-        <div id="MobileApp">Hello Mobile World</div>
+        <div id="MobileApp">
+					Hello Mobile World
+				</div>
       );
     } else {
       return (
