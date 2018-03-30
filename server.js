@@ -70,8 +70,6 @@ function renderFullPage(html, initialState ) {
 		if ( NODE_ENV === 'production' )
 		stylesheet = '<link href="/build/style.css" rel="stylesheet"/>'
 
-	console.log(NODE_ENV, stylesheet);
-
   return `
     <!doctype html>
     <html lang="en" xml:lang="en">
