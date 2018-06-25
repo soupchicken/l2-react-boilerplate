@@ -4,9 +4,8 @@ const _router = Express.Router();
 
 export default (() => {
   _router.get('/health_check', ( req, res ) => res.sendStatus( 200 ));
-	_router.get('/favicon.ico', ( req, res ) => res.sendFile( path.resolve('src', 'favicon.ico' )));
-	_router.get('/build/:filename', ( req, res) => {
-    res.sendFile( path.resolve('build', req.params.filename ))
+  _router.get(['/build*','/images*'], ( req, res) => {
+    res.sendFile( path.resolve( ...req.path.split('/')))
   });
   return _router;
 })

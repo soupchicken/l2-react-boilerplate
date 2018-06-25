@@ -16,26 +16,22 @@ module.exports = {
     publicPath: '/build/'
   },
   resolve: {
+    alias:{
+			images: path.resolve('images')
+		},
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
   module: {
     rules: [
-      {
-        test: /\.tsx?$/,
-        loader: ["babel-loader","awesome-typescript-loader"]
-      },
-			{
-				test: /\.png$/,
-				loader: "url-loader?mimetype=image/png"
-			},
-			{
-				test: /\.svg?$/,
-				loader: 'svg-sprite!svgo',
-				include: path.resolve('./images')
-			},
-			{
-				test: /\.gif$/,
-				loader: "url-loader?mimetype=image/gif"
+      { // Try to bootstrap image as base64, fallback to file-loader
+				test: /\.(png|jpg|gif|svg)$/,
+        loader: 'url-loader',
+				options: {
+					limit:8192,
+					fallback:'file-loader',
+					name:'[name].[ext]',
+					publicPath: '/build/'
+				}
 			},
       {
         test: /\.css$/,
@@ -46,13 +42,12 @@ module.exports = {
         loader: ['style-loader','css-loader','sass-loader']
       },
       {
-        enforce: "pre",
-        test: /\.js$/,
-        loader: "source-map-loader"
+        test: /\.tsx?$/,
+        loader: ["babel-loader","awesome-typescript-loader"]
       },
       {
         test: /\.js$/,
-        loader: ['babel-loader'],
+        loader: ['babel-loader','source-map-loader'],
         include: srcPath
       },
       {

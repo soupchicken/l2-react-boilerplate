@@ -78,9 +78,12 @@ function renderFullPage(html, initialState ) {
     <html lang="en" xml:lang="en">
       <head>
         <title>L2 Boilerplate</title>
-        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta http-equiv="cache-control" content="max-age=0" />
+        <meta http-equiv="cache-control" content="no-cache" />
         <meta name="description" content="L2 Boilerplate"/>
-        <link rel="icon" type="img/ico" href="build/favicon.ico"/>
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+        <link rel="icon" type="img/ico" href="/images/favicon.ico"/>
         ${ stylesheet }
       </head>
       <body>

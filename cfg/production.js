@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const srcPath = path.resolve('src');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
@@ -15,10 +16,23 @@ module.exports = [
 		publicPath: 'build'
 	},
 	resolve: {
+		alias:{
+			images: path.resolve('images')
+		},
 		extensions: [".ts", ".tsx", ".js", ".json"]
 	},
 	module: {
 		rules: [
+			{ // Try to bootstrap image as base64, fallback to file-loader
+				test: /\.(png|jpg|gif|svg)$/,
+        loader: 'url-loader',
+				options: {
+					limit:8192,
+					fallback:'file-loader',
+					name:'[name].[ext]',
+					publicPath: '/build/'
+				}
+			},
 			{
 				test: /\.css$/,
 				use: ExtractTextPlugin.extract({
