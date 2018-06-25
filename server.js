@@ -1,6 +1,7 @@
 import Express from 'express';
 import router from './router';
 import webpack from 'webpack'
+console.log("IMPORTS DONE");
 const app = new Express();
 const port = 3000, redirectPort = 3001;
 const bodyParser = require('body-parser');
@@ -9,6 +10,7 @@ const request = require('request');
 
 const NODE_ENV = process.env.NODE_ENV;
 if( NODE_ENV !== 'production' ){
+  console.log("NOT PRODUCTION");
   const config = require(`./cfg/${process.env.NODE_ENV}`)
   const compiler = webpack( config );
   const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -30,7 +32,7 @@ import { StaticRouter, Route } from 'react-router-dom';
 import { AppContainer } from 'react-hot-loader'
 import { renderToString } from 'react-dom/server'
 import { Provider } from 'react-redux'
-import App from './src/App/ConnectedApp'
+import App from './src/App/index.ts'
 
 app.use( compress() );
 app.use( cookieParser() );
@@ -41,6 +43,7 @@ app.use( router() );
 app.use( handleRequest );
 
 function handleRequest( req, res ){
+  console.log("DO WE GET HERE");
   const context = {};
   const initialState = { environment:{ NODE_ENV }};
   const store = configureStore( initialState );

@@ -4,24 +4,25 @@ const srcPath = path.resolve('src')
 
 module.exports = {
   devtool: 'eval',
-
+  mode:'development',
   entry: [
     'react-hot-loader/patch',
     'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
-    './src/index.js',
+    './src/index.tsx',
   ],
   output: {
     path: path.resolve('build'),
     filename: 'app.js',
     publicPath: '/build/'
   },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".json"]
+  },
   module: {
     rules: [
       {
-        enforce:'pre',
-        test: /\.(js|jsx)$/,
-        include: srcPath,
-        loader: 'eslint-loader'
+        test: /\.tsx?$/,
+        loader: ["babel-loader","awesome-typescript-loader"]
       },
 			{
 				test: /\.png$/,
@@ -45,6 +46,11 @@ module.exports = {
         loader: ['style-loader','css-loader','sass-loader']
       },
       {
+        enforce: "pre",
+        test: /\.js$/,
+        loader: "source-map-loader"
+      },
+      {
         test: /\.js$/,
         loader: ['babel-loader'],
         include: srcPath
@@ -56,7 +62,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.EnvironmentPlugin(['NODE_ENV']),
+    // new webpack.EnvironmentPlugin(['NODE_ENV']),
     new webpack.HotModuleReplacementPlugin()
   ]
 }

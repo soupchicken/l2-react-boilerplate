@@ -1,5 +1,7 @@
 # Public
 build/*
+.awcache/*
+
 
 #OSX File
 .DS_Store
