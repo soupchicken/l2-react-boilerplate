@@ -28,6 +28,7 @@ import configureStore from './src/config/store'
 import { StaticRouter, Route } from 'react-router-dom';
 import { AppContainer } from 'react-hot-loader'
 import { renderToString } from 'react-dom/server'
+import { ServerStyleSheet, StyleSheetManager } from 'styled-components'
 import { Provider } from 'react-redux'
 import App from './src/App/index.ts'
 
@@ -40,36 +41,32 @@ app.use( router() );
 app.use( handleRequest );
 
 function handleRequest( req, res ){
-  console.log("DO WE GET HERE");
   const context = {};
   const initialState = { environment:{ NODE_ENV }};
   const store = configureStore( initialState );
+  const sheet = new ServerStyleSheet();
   const html = renderToString(
-    React.createElement( Provider, { store }, // Redux Wrapper
-      React.createElement( StaticRouter, { location:req.url, context }, // React Router ServerSide wrap
-				NODE_ENV === 'production' ?
-					React.createElement( Route, { path:'/', component:App }) :
-					React.createElement( AppContainer, null, // Hot loader wrap
-						React.createElement( Route, { path:'/', component:App })
-					)
+    React.createElement( StyleSheetManager, { sheet: sheet.instance },
+      React.createElement( Provider, { store }, // Redux Wrapper
+        React.createElement( StaticRouter, { location:req.url, context }, // React Router ServerSide wrap
+          NODE_ENV === 'production' ?
+            React.createElement( Route, { path:'/', component:App }) :
+            React.createElement( AppContainer, null, // Hot loader wrap
+              React.createElement( Route, { path:'/', component:App })
+            )
+        )
       )
     )
   )
-	if ( context.redirectUrl){
-		res.redirect( 302, '/' );
-	} else {
-		res.status(200).send(renderFullPage( html, store.getState() ));
-	}
+  if ( context.redirectUrl){
+    res.redirect( 302, '/' );
+  } else {
+    res.status(200).send(renderFullPage( html, store.getState(), sheet.getStyleTags() ));
+  }
 }
 
 
-function renderFullPage(html, initialState ) {
-
-
-	let stylesheet = '';
-		if ( NODE_ENV === 'production' )
-		stylesheet = '<link href="/build/style.css" rel="stylesheet"/>'
-
+function renderFullPage(html, initialState, stylesheet ) {
   return `
     <!doctype html>
     <html lang="en" xml:lang="en">
@@ -80,11 +77,14 @@ function renderFullPage(html, initialState ) {
         <meta http-equiv="cache-control" content="no-cache" />
         <meta name="description" content="L2 Boilerplate"/>
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" rel="stylesheet" />
         <link rel="icon" type="img/ico" href="/images/favicon.ico"/>
         ${ stylesheet }
       </head>
       <body>
-        ${ html }
+        <div id="App">
+          ${ html }
+        </div>
         <script>
           window.__INITIAL_STATE__ = ${ JSON.stringify( initialState ) }
         </script>

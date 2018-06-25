@@ -1,43 +1,54 @@
 import React from 'react'
 import Backbone from 'backbone'
-import _ from 'lodash'
+import clone from 'lodash/clone'
+import __ from './_styles'
 import MobileDetect from 'mobile-detect';
 interface Props {}
-interface State { isMobile:boolean, dispatcher:any }
+interface State { isMobile:boolean, dispatcher:any, windowWidth:number }
 
 class App extends React.Component<Props, State> {
 
   constructor(props){
     super(props);
     let md:any = {};
-    if ( typeof window !== 'undefined' && window.navigator )
+    let windowWidth = 0;
+    if ( typeof window !== 'undefined' && window.navigator ){
       md = new MobileDetect(window.navigator.userAgent);
+      windowWidth = window.outerWidth;
+    }
     this.state = {
       isMobile: md.mobile && md.mobile() !== null,
-      dispatcher: _.clone(Backbone.Events)
+      dispatcher: clone( Backbone.Events ),
+      windowWidth
     }
+  }
+  componentDidMount(){
+    this.getWindowWidth();
+    window.addEventListener('resize', this.getWindowWidth )
+  }
+  getWindowWidth = () => {
+    const windowWidth = window.outerWidth;
+    this.setState({ windowWidth })
   }
 
   getChildContext(){
-    const { dispatcher, isMobile } = this.state;
-    return {
-      isMobile,
-      dispatcher
-    }
+    const { dispatcher } = this.state;
+    return { dispatcher }
   }
 
   render() {
-    const { isMobile } = this.state;
-    if ( isMobile ){
+    const { isMobile, windowWidth } = this.state;
+    // return ( isMobile || windowWidth && windowWidth < 420 ?
+      // <__.MobileApp>
+        // Mobile
+      // </__.MobileApp> :
       return (
-        <div id="MobileApp">THIS IS A MOBILE APP</div>
-      );
-    } else {
-      return (
-        <div id="App">THIS IS A WEBAPP</div>
-      );
-    }
+      <__.App>
+        Desktop
+      </__.App>
+    )
+    
   }
-};
+}
 
 export default App

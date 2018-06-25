@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const srcPath = path.resolve('src')
 
 module.exports = {
-  devtool: 'eval',
+  devtool: 'none',
   mode:'development',
   entry: [
     'babel-polyfill',
@@ -18,22 +18,22 @@ module.exports = {
   },
   resolve: {
     alias:{
-			images: path.resolve('images')
-		},
+      images: path.resolve('images')
+    },
     extensions: [".ts", ".tsx", ".js", ".json"]
   },
   module: {
     rules: [
       { // Try to bootstrap image as base64, fallback to file-loader
-				test: /\.(png|jpg|gif|svg)$/,
+        test: /\.(png|jpg|gif|svg)$/,
         loader: 'url-loader',
-				options: {
-					limit:8192,
-					fallback:'file-loader',
-					name:'[name].[ext]',
-					publicPath: '/build/'
-				}
-			},
+        options: {
+          limit:8192,
+          fallback:'file-loader',
+          name:'[name].[ext]',
+          publicPath: '/build/'
+        }
+      },
       {
         test: /\.css$/,
         loader: ['style-loader','css-loader']
@@ -58,7 +58,6 @@ module.exports = {
     ]
   },
   plugins: [
-    // new webpack.EnvironmentPlugin(['NODE_ENV']),
     new webpack.HotModuleReplacementPlugin()
   ]
 }
