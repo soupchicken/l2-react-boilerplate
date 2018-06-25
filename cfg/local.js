@@ -6,6 +6,7 @@ module.exports = {
   devtool: 'eval',
   mode:'development',
   entry: [
+    'babel-polyfill',
     'react-hot-loader/patch',
     'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
     './src/index.tsx',

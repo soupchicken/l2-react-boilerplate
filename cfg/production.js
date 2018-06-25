@@ -9,7 +9,7 @@ module.exports = [
 	{
 	name:'app',
 	mode:'production',
-	entry: './src/index.tsx',
+	entry: ['babel-polyfill', './src/index.tsx'],
 	output: {
 		path: path.resolve('build'),
 		filename: 'app.js',

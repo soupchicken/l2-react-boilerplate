@@ -1,17 +1,14 @@
 import Express from 'express';
 import router from './router';
 import webpack from 'webpack'
-console.log("IMPORTS DONE");
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import request from 'request';
 const app = new Express();
 const port = 3000, redirectPort = 3001;
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const request = require('request');
-
 const NODE_ENV = process.env.NODE_ENV;
-if( NODE_ENV !== 'production' ){
-  console.log("NOT PRODUCTION");
-  const config = require(`./cfg/${process.env.NODE_ENV}`)
+if( NODE_ENV === 'local' ){
+  const config = require(`./cfg/local`)
   const compiler = webpack( config );
   const webpackDevMiddleware = require('webpack-dev-middleware');
   const webpackHotMiddleware = require( 'webpack-hot-middleware');
