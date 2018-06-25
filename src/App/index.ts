@@ -1,2 +1,2 @@
-import App from './_connectedApp'
+import App from './_container'
 export default App

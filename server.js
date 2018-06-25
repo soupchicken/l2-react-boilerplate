@@ -21,52 +21,66 @@ if( NODE_ENV === 'local' ){
 }
 
 const compress = require('compression');
-var http = require('http');
+const http = require('http');
+app.use( compress() );
+app.use( cookieParser() );
+app.use( bodyParser.urlencoded({ extended:false }) );
+app.use( bodyParser.json({ limit:'1mb' }) );
+app.use( router() );
 
+// Get App Components, Providers
 import React from 'react';
+import App from './src/App/index.ts'
 import configureStore from './src/config/store'
+import getApolloClient from './src/config/getApolloClient'
 import { StaticRouter, Route } from 'react-router-dom';
+import { ApolloProvider, getDataFromTree, renderToStringWithData } from "react-apollo";
 import { AppContainer } from 'react-hot-loader'
 import { renderToString } from 'react-dom/server'
 import { ServerStyleSheet, StyleSheetManager } from 'styled-components'
 import { Provider } from 'react-redux'
-import App from './src/App/index.ts'
-
-app.use( compress() );
-app.use( cookieParser() );
-app.use( bodyParser.urlencoded({ extended:false }) );
-app.use( bodyParser.json({ limit:'5mb' }) );
-app.use( router() );
 
 app.use( handleRequest );
 
 function handleRequest( req, res ){
   const context = {};
   const initialState = { environment:{ NODE_ENV }};
+  const client = getApolloClient()
   const store = configureStore( initialState );
   const sheet = new ServerStyleSheet();
-  const html = renderToString(
-    React.createElement( StyleSheetManager, { sheet: sheet.instance },
-      React.createElement( Provider, { store }, // Redux Wrapper
-        React.createElement( StaticRouter, { location:req.url, context }, // React Router ServerSide wrap
-          NODE_ENV === 'production' ?
-            React.createElement( Route, { path:'/', component:App }) :
-            React.createElement( AppContainer, null, // Hot loader wrap
-              React.createElement( Route, { path:'/', component:App })
-            )
-        )
+
+  // Bootstrap App by calling route-specific Apollo Queries via a promise
+  const InitializedApp =
+    React.createElement( StaticRouter, { location:req.url, context }, // React Router ServerSide wrap
+      React.createElement( ApolloProvider, { client },
+        React.createElement( Provider, { store },
+          React.createElement( Route, { path:'/', component:App })
       )
-    )
-  )
-  if ( context.redirectUrl){
-    res.redirect( 302, '/' );
-  } else {
-    res.status(200).send(renderFullPage( html, store.getState(), sheet.getStyleTags() ));
-  }
+  ))
+  // Then take hydrated apollo state and finish rendering the page
+  getDataFromTree( InitializedApp ).then(() => {
+    if ( context.redirectUrl ){
+      res.redirect( 302, '/' );
+    } else {
+      // Have to render again to parse stylesheets... might be a better way?
+      const html = renderToString(
+        React.createElement( StyleSheetManager, { sheet: sheet.instance }, // Styled-Components SSR Wrapper
+          React.createElement( StaticRouter, { location:req.url, context }, // React Router ServerSide wrap
+            React.createElement( ApolloProvider, { client },
+              React.createElement( Provider, { store },
+              NODE_ENV === 'production' ?
+                React.createElement( Route, { path:'/', component:App }) :
+                React.createElement( AppContainer, null, // Hot loader wrap
+                  React.createElement( Route, { path:'/', component:App })
+                )
+      )))))
+      res.status(200).send( renderFullPage( html, store.getState(), client.extract(), sheet.getStyleTags()));
+    }
+  })
 }
 
 
-function renderFullPage(html, initialState, stylesheet ) {
+function renderFullPage(html, initialState, apolloState, stylesheet ) {
   return `
     <!doctype html>
     <html lang="en" xml:lang="en">
@@ -82,11 +96,10 @@ function renderFullPage(html, initialState, stylesheet ) {
         ${ stylesheet }
       </head>
       <body>
-        <div id="App">
-          ${ html }
-        </div>
+        <div id="App">${ html }</div>
         <script>
           window.__INITIAL_STATE__ = ${ JSON.stringify( initialState ) }
+          window.__APOLLO_STATE__ = ${ JSON.stringify( apolloState ) }
         </script>
         <script src="/build/app.js"></script>
       </body>
