@@ -4,8 +4,8 @@ import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { ApolloProvider } from "react-apollo"
 import { AppContainer } from 'react-hot-loader'
-import configureStore from './config/store'
-import getApolloClient from './config/getApolloClient'
+import configureStore from './config/configureStore'
+import configureApolloClient from './config/configureApolloClient'
 import App from './App'
 import 'normalize.css/normalize.css'
 
@@ -16,7 +16,7 @@ declare global {
     devToolsExtension:any
   }
 }
-const client = getApolloClient(( window as Window ).__APOLLO_STATE__ );
+const client = configureApolloClient(( window as Window ).__APOLLO_STATE__ );
 const store = configureStore(( window as Window ).__INITIAL_STATE__ );
 const NODE_ENV = store.getState().environment.NODE_ENV;
 

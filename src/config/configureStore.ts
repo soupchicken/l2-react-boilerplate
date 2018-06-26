@@ -1,7 +1,7 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
 import reducers from '../reducers'
 
-export default ( initialState ) => {
+const configureStore = ( initialState ) => {
   const enhancer = compose(
     typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
   );
@@ -12,3 +12,4 @@ export default ( initialState ) => {
   );
     return store;
 }
+export default configureStore

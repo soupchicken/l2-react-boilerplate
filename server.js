@@ -30,8 +30,8 @@ app.use( router() );
 
 // Get App Components, Providers
 import React from 'react';
-import configureStore from './src/config/store'
-import getApolloClient from './src/config/getApolloClient'
+import configureStore from './src/config/configureStore'
+import configureApolloClient from './src/config/configureApolloClient'
 import { StaticRouter, Route } from 'react-router-dom';
 import { ApolloProvider, getDataFromTree, renderToStringWithData } from "react-apollo";
 import { AppContainer } from 'react-hot-loader'
@@ -45,7 +45,7 @@ app.use( handleRequest );
 function handleRequest( req, res ){
   const context = {};
   const initialState = { environment:{ NODE_ENV }};
-  const client = getApolloClient()
+  const client = configureApolloClient()
   const store = configureStore( initialState );
   const sheet = new ServerStyleSheet();
 
