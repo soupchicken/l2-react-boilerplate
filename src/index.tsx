@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from 'react-dom'
+import ReactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import { ApolloProvider } from "react-apollo"
@@ -20,16 +20,16 @@ const client = getApolloClient(( window as Window ).__APOLLO_STATE__ );
 const store = configureStore(( window as Window ).__INITIAL_STATE__ );
 const NODE_ENV = store.getState().environment.NODE_ENV;
 
-render(
-  <BrowserRouter>
-    <ApolloProvider client={ client }>
-      <Provider store={ store }>
+ReactDom[NODE_ENV === 'production' ? 'hydrate' : 'render'](
+  <ApolloProvider client={ client }>
+    <Provider store={ store }>
+      <BrowserRouter>
       { NODE_ENV === 'production' ?
         // don't include AppContainer component in production
         // used for hot-reloads in webpack
         <App /> : <AppContainer><App/></AppContainer>}
-      </Provider>
-    </ApolloProvider>
-  </BrowserRouter>,
+      </BrowserRouter>
+    </Provider>
+  </ApolloProvider>,
   document.getElementById('App')
 );

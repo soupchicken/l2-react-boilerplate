@@ -4,7 +4,6 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import fetch from 'node-fetch'
 
 const getApolloClient = ( apolloState:any ) => {
-  console.log(apolloState, "MY MAN");
   return new ApolloClient({
     ssrMode:true,
     link: new HttpLink({

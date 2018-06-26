@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export default {
-  App: styled.div`
+  DesktopApp: styled.div`
     width: 100%;
     height: 100vh;
     margin: 0;
@@ -10,7 +10,7 @@ export default {
     color:white;
     font-weight: 400;
     overflow: hidden;
-    background:#3B3835;
+    background:#1E2324;
   `,
   MobileApp: styled.div`
     width: 100%;
@@ -21,6 +21,6 @@ export default {
     color:white;
     font-weight: 400;
     overflow: hidden;
-    background:#3B3835;
+    background:#1E2324;
   `
 }

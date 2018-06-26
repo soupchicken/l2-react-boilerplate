@@ -1,11 +1,15 @@
 import React from 'react'
-import Backbone from 'backbone'
-import clone from 'lodash/clone'
-import __ from './_styles'
+import { connect } from 'react-redux'
+import { RouteComponentProps } from 'react-router'
+import { withRouter, Switch, Route, Link } from 'react-router-dom';
 import { Query } from 'react-apollo'
-import { example } from './_gql'
+import Backbone from 'backbone'
 import MobileDetect from 'mobile-detect';
-interface Props {}
+import __ from './_styles'
+import clone from 'lodash/clone'
+import { example } from './_gql'
+
+interface Props extends RouteComponentProps<any> {}
 interface State { isMobile:boolean, dispatcher:any, windowWidth:number }
 
 class App extends React.Component<Props, State> {
@@ -44,7 +48,12 @@ class App extends React.Component<Props, State> {
       <__.MobileApp>
         Mobile
       </__.MobileApp> :
-      <__.App>
+      <__.DesktopApp>
+        <Link to='/'>HOME</Link>
+        <Link to='/test'>TEST</Link>
+        <Switch>
+          <Route exact path='/test' component={ class test extends React.Component { render(){ return( <div>A Test</div> )} } } />
+        </Switch>
         <Query query={ example }>
            {({ loading, error, data }) => {
              if ( loading ) return <div>Loading</div>
@@ -56,11 +65,12 @@ class App extends React.Component<Props, State> {
             ));
            }}
          </Query>
-        Desktop
-      </__.App>
+        Desktop App
+      </__.DesktopApp>
     )
 
   }
 }
-
-export default App
+const mapStateToProps = ( state ) => ({})
+const mapDispatchToProps = dispatch => ({})
+export default withRouter( connect( mapStateToProps, mapDispatchToProps )( App ));

@@ -30,7 +30,6 @@ app.use( router() );
 
 // Get App Components, Providers
 import React from 'react';
-import App from './src/App/index.ts'
 import configureStore from './src/config/store'
 import getApolloClient from './src/config/getApolloClient'
 import { StaticRouter, Route } from 'react-router-dom';
@@ -39,6 +38,7 @@ import { AppContainer } from 'react-hot-loader'
 import { renderToString } from 'react-dom/server'
 import { ServerStyleSheet, StyleSheetManager } from 'styled-components'
 import { Provider } from 'react-redux'
+import App from './src/App/index.ts';
 
 app.use( handleRequest );
 
@@ -49,38 +49,37 @@ function handleRequest( req, res ){
   const store = configureStore( initialState );
   const sheet = new ServerStyleSheet();
 
-  // Bootstrap App by calling route-specific Apollo Queries via a promise
-  const InitializedApp =
-    React.createElement( StaticRouter, { location:req.url, context }, // React Router ServerSide wrap
+  if ( NODE_ENV === 'local' ){
+    // Send HTML without any server side rendering
+    // No what I'd prefer to do, but a styled-components bug prevents Hot reloads...
+    // TODO: Figure out why styled-component classes are being scrambled to fix local env SSR
+    const html = renderHTML('', {}, '', '')
+    res.status(200).send( html );
+  } else {
+    // Render Server Side
+    // Bootstrap App by calling route-specific Apollo Queries via a promise
+    const InitializedApp =
       React.createElement( ApolloProvider, { client },
         React.createElement( Provider, { store },
-          React.createElement( Route, { path:'/', component:App })
-      )
-  ))
-  // Then take hydrated apollo state and finish rendering the page
-  getDataFromTree( InitializedApp ).then(() => {
-    if ( context.redirectUrl ){
-      res.redirect( 302, '/' );
-    } else {
-      // Have to render again to parse stylesheets... might be a better way?
-      const html = renderToString(
-        React.createElement( StyleSheetManager, { sheet: sheet.instance }, // Styled-Components SSR Wrapper
           React.createElement( StaticRouter, { location:req.url, context }, // React Router ServerSide wrap
-            React.createElement( ApolloProvider, { client },
-              React.createElement( Provider, { store },
-              NODE_ENV === 'production' ?
-                React.createElement( Route, { path:'/', component:App }) :
-                React.createElement( AppContainer, null, // Hot loader wrap
-                  React.createElement( Route, { path:'/', component:App })
-                )
-      )))))
-      res.status(200).send( renderFullPage( html, store.getState(), client.extract(), sheet.getStyleTags()));
-    }
-  })
+              React.createElement( Route, { path:'/', component:App })
+    )))
+    // Let React Apollo do the heavy lifting to hydrate app data and return html
+    renderToStringWithData( InitializedApp ).then( content => {
+      if ( context.redirectUrl ){
+        res.redirect( 302, '/' );
+      } else {
+        const html = renderHTML( content, store.getState(), client.extract(), sheet.getStyleTags() )
+        res.status(200).send( html );
+      }
+    })
+  }
+
+
 }
 
 
-function renderFullPage(html, initialState, apolloState, stylesheet ) {
+function renderHTML( content, initialState, apolloState, stylesheet ) {
   return `
     <!doctype html>
     <html lang="en" xml:lang="en">
@@ -96,7 +95,7 @@ function renderFullPage(html, initialState, apolloState, stylesheet ) {
         ${ stylesheet }
       </head>
       <body>
-        <div id="App">${ html }</div>
+        <div id="App">${ content }</div>
         <script>
           window.__INITIAL_STATE__ = ${ JSON.stringify( initialState ) }
           window.__APOLLO_STATE__ = ${ JSON.stringify( apolloState ) }
